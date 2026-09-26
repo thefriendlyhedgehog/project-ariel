@@ -4186,17 +4186,22 @@ Research                      Venue  Year     Relevance
 ────────────────────────────  ─────  ───────  ──────────────────────────────────────────
 faulTPM (Buhren / Werling)    —      2023     PSP fault-injection; introduces the TOCTOU
                                               SPI-interposer approach for AMD
-pAMDora (Buhren et al.)       39C3   2022     TOCTOU attack targeting the BC-250 / 4700S
+pAMDora (Buhren et al.)       39C3   2025     TOCTOU attack targeting the BC-250 / 4700S
                                               family
-Positive Tech. BC-250 TOCTOU  —      2023-24  Reproduction of pAMDora against the BC-250
+Positive Tech. (Shalpygin)    Habr   Jan26    Independent TOCTOU repro, no fault injection —
+                                              RPi Pico 2 dual-SPI swap; bypasses TOS sig check,
+                                              extracts IPL, dumps PSP ROM via CCP DMA, code exec
 Google Project Zero           —      2021     CVE-2021-26344 discovery (APCB parser
                                               overflow)
 
 The TOCTOU class relies on an SPI interposer presenting different flash contents to
 the signature check versus the actual load; it requires physical flash isolation and a
-spare board.  psptool (the community PSP directory / $PS1 tool) is used for extraction
-but cannot verify RSA signatures on compressed ABLs and reports false verification
-failures for valid signatures.
+spare board.  The Jan 2026 reproduction did this with a Raspberry Pi Pico 2 switching
+between two SOIC-8 SPI chips — the hardware bar is lower than "spare board" alone
+implies, though it's still a physical-access, solder-and-clip attack, not remote.
+psptool (the community PSP directory / $PS1 tool) is used for extraction but cannot
+verify RSA signatures on compressed ABLs and reports false verification failures for
+valid signatures.
 
     See: The Boot Chain & ABL Stages — The Trusted OS — APCB — Platform Security Posture
 ```
