@@ -4135,10 +4135,15 @@ CVE-2025-52533  HIGH 8.7  UNPATCHED  AMD-SB-4013/3023       On-chip debug interf
                                      Feb26                  improper access control lets
                                                             a privileged attacker enable
                                                             it (CWE-1191)
-CVE-2021-46747  HIGH 7.1  UNPATCHED  AMD-SB-4017 May26      ASP — insufficient access-control
-                                                            granularity, SMN aperture mapping
+CVE-2021-46747  HIGH 7.1  UNPATCHED  AMD-SB-4017 May26      ASP — CWE-1220 insufficient
+                                                            access-control granularity lets
+                                                            userspace map SMN apertures
                                                             (Ryzen 3000-5000 / Embedded
-                                                            R1000-V3000 line)
+                                                            R1000-V3000 line). Possibly the
+                                                            same bug class as the q2 0x23
+                                                            SMU mailbox primitive in
+                                                            arieltune-core.md §10 —
+                                                            unconfirmed, see there.
 CVE-2021-26380  LOW 1.8   UNPATCHED  AMD-SB-4017 May26      TOS driver — malformed call yields
                                                             unintended memory access
 

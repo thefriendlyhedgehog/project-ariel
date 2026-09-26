@@ -433,3 +433,19 @@ exists anywhere in the community.
 
 **Verdict:** not proven anywhere; parked as research. Everything the fleet
 needs today is covered by the proven `0xFF` + OS-offline combination.
+
+**Possible public disclosure of this primitive class:** CVE-2021-46747
+(CWE-1220, AMD-SB-4017 May26, CVSS 7.1) reads: "Insufficient granularity of
+access control in ASP (AMD Secure Processor) may allow an attacker with an
+untrusted user space application to map sensitive SMN apertures leading to a
+potential escalation of privileges." That is the same *class* of bug as the
+q2 `0x23` ring-subqueue overflow above — userspace reaching an SMN aperture it
+shouldn't via the SMU mailbox path — on the same silicon generation (the
+bulletin lists Athlon 3000 / Ryzen 3000-5000 / Embedded R1000-V3000, which
+covers this die's generation). This is an inference, not a confirmed match:
+AMD's bulletin doesn't name a message ID or give the exact aperture, and the
+BC-250 isn't a listed product. Worth checking before porting the q2 `0x23`
+exploit to P5 (step 1 above) — if it's the same bug AMD patched, a fixed PSP
+build on newer AGESA may close the primitive entirely, which changes the
+"port to P5" cost-benefit. See also: bc250_manual.md → CVEs & Public
+Research.
