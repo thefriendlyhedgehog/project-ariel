@@ -4110,7 +4110,10 @@ modified.
 The board runs AGESA V9 RBNBDK-BL5 46.1.2.211126 (November 2021).  CVEs whose fixes
 postdate 2021-11 are generally unpatched here.  The following are provided as a
 platform-security reference — a catalogue, not exploitation procedures.  Track fixes
-via AMD product-security bulletins.
+via AMD product-security bulletins.  The BC-250 was never a retail AMD SKU, so none
+of these bulletins name it explicitly — entries below list the product line the
+bulletin covers; applicability to this exact stepping is inferred from silicon
+generation (Family 17h / Zen 2), not AMD-confirmed.
 
   Tier 1 — direct PSP code execution (software):
 
@@ -4132,6 +4135,12 @@ CVE-2025-52533  HIGH 8.7  UNPATCHED  AMD-SB-4013/3023       On-chip debug interf
                                      Feb26                  improper access control lets
                                                             a privileged attacker enable
                                                             it (CWE-1191)
+CVE-2021-46747  HIGH 7.1  UNPATCHED  AMD-SB-4017 May26      ASP — insufficient access-control
+                                                            granularity, SMN aperture mapping
+                                                            (Ryzen 3000-5000 / Embedded
+                                                            R1000-V3000 line)
+CVE-2021-26380  LOW 1.8   UNPATCHED  AMD-SB-4017 May26      TOS driver — malformed call yields
+                                                            unintended memory access
 
   Tier 2 — stepping stones (x86 SMM, not direct PSP):
 
@@ -4142,6 +4151,17 @@ CVE-2025-29950  MED  SMM stack overflow  Support-path only
 CVE-2025-54502  HIGH SMM callout (APCB   Support-path only - Ring 0 -> SMM privilege
                      driver boot-svc)    escalation via APCB SMM driver's LocateProtocol
                                          misuse (AMD-SB-7054 Apr26)
+CVE-2022-23826  LOW  Graphics TOCTOU     Support-path only — register-load race,
+                                         same class as pAMDora/faulTPM below
+                                         (AMD-SB-4017 May26)
+
+  Unverified — needs confirmation before adding above:
+
+CVE-2026-6726 (8.5) and CVE-2026-6727 (8.3), AMD-SB-7064 Aug26 — fTPM reference-code
+key-leakage and an RSA-OAEP timing side channel.  Highest severity found in this pass,
+but scoped to AMD's TPM stack; not yet confirmed to share code with this board's
+PSP/TOS.  CVE-2026-0438 (SMM callout, AMD-SB-4017/3030) is explicitly Zen 4/5-only
+(Ryzen/EPYC 4000-9000 series) and does not apply here.
 
   Relevant external research (references, not procedures):
 
