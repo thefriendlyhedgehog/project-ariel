@@ -419,7 +419,17 @@ exists anywhere in the community.
 
 **What must happen before telemetry can be trusted for a given mask M:**
 1. Port the q2 `0x23` unlock exploit to P5 firmware offsets and re-validate it
-   (BIOS-3-only today).
+   (BIOS-3-only today). This step got more tractable: a 2026-09-24 community
+   re-check ([lorek123/bc250-notes](https://github.com/lorek123/bc250-notes),
+   `smu-xtensa-check.py`) reverses an earlier "SMU firmware is AES-encrypted"
+   verdict — the PSP header reads `encrypted=0` and the body decodes as
+   plaintext Xtensa. Confirmed on the P3.00 SMU build, 88.6.0 (0x00580600 —
+   see SMU / MP1 in the manual); their Robin5.00 (P5) copy is 88.7.1
+   (0x00580701), the same build the manual's own command-map RE was mostly
+   done against, but plaintext-ness there is unconfirmed independently. If it
+   holds, static Ghidra analysis of the P5 offsets becomes possible
+   without a live exploit first — worth checking before assuming step 1 still
+   needs runtime BIOS-3-only validation as its only path.
 2. Re-run GabriWar's differential core-offline probe with mask M live: sweep
    cores offline one at a time and record which metric fields move, to map the
    firmware's per-mask layout empirically.
