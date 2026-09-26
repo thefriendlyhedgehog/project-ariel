@@ -3613,6 +3613,17 @@ PSP device RSA-2048 private key — not software-feasible.  All debug primitives
 present (signed module, kernel SVCs, SMN commit targets, IP whitelists) but the
 invocation edges are absent.
 
+CVE-2025-52533 (CWE-1191, CVSS 8.7, AMD-SB-4013/3023 Feb26) covers exactly this class
+of bug platform-wide: "improper access control in an on-chip debug interface could
+allow a privileged attacker to enable a debug interface."  It requires an already-
+privileged local attacker (PR:H in the CVSS vector) — not a new way in on its own —
+and the bulletin doesn't name the specific commit path it patches.  The two dead-code
+findings above (no SVC 0x1F handler, DRIVER_ENTRIES kernel mirror unreferenced) rule
+out the *trustlet* invocation route this section analyzed; whether they also cover
+whatever route AMD's fix addresses is unconfirmed. Until proven otherwise this AGESA's
+debug-unlock path is best treated as unpatched-but-not-yet-shown-reachable, not as
+closed by this analysis.
+
 ┌─ CAUTION ────────────────────────────────────────────────────────────────────────────┐
 │  The J2 header is unpopulated, and even fitted the HDT path is PSP-gated and inert   │
 │  on shipped firmware; no host-side action opens a debug session.  The DACR =         │
@@ -3621,6 +3632,7 @@ invocation edges are absent.
 └──────────────────────────────────────────────────────────────────────────────────────┘
 
    See: The Trusted OS (SVC 0x1F) — DRIVER_ENTRIES — Debug & Recovery Headers, Chapter 1
+        — CVEs & Public Research
 ```
 
 ## DRIVER_ENTRIES (PSP Ring-Command Processor)
