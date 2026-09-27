@@ -441,6 +441,23 @@ exists anywhere in the community.
 5. Only then consider an experimental `cores mask <0xNN>` verb, hidden behind
    an explicit `--experimental` flag with the exploit's risk stated.
 
+**Safety note on the primitive itself (2026-09-27):** an independent enumeration
+effort against this same 5-queue SMU mailbox (lorek123/bc250-notes,
+`bc250-smu-reverse-plan.md`) found that blindly sending Q2 messages in the
+`0x11`-`0x3F` range — which contains `0x23` — caused a **permanent SMU firmware
+hang requiring a full reboot** (observed 2026-06-08, on the same command-map
+this repo's own RE mostly targets). They flag that whole range, plus all of
+Q4, as a "danger zone: do not probe without Ghidra analysis of the handler
+code first" in their own safety framework. This doesn't confirm `bc250-smu-unlock`'s
+`0x23` PoC is unsafe — a known, deliberate message sequence and a blind sweep
+across a 46-command range are different things, and their hang was observed
+during broad enumeration, not by sending `0x23` specifically — but it does mean
+`0x23`'s safety on this hardware class is not corroborated by the only other
+public group known to have systematically probed adjacent Q2 commands. Treat
+step 1 below as needing verified-safe, not just verified-effective, before any
+port attempt: confirm what `0x23` actually does (via the now-tractable static
+Ghidra analysis) before ever sending it live on a board that matters.
+
 **Verdict:** not proven anywhere; parked as research. Everything the fleet
 needs today is covered by the proven `0xFF` + OS-offline combination.
 

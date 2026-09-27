@@ -2450,6 +2450,18 @@ the SMU starts — and the patch is gated by PSP signature enforcement of the SM
 With the VCN DPM table empty, applying P-state index 0 to a 0-entry table also risks an
 SMU hang. All remaining enablement paths cross into the Security domain (Chapter 3).
 
+An independent 2026-09-24 analysis of the same firmware build (lorek123/bc250-notes,
+`smu_p300_v58060_mp1_fw.bin` — SMU fw 0x00580600, matching this section) reaches a
+compatible conclusion from a different angle: full-firmware Ghidra decompilation (1,280
+functions) finds no VCLK/DCLK PLL or divider setup anywhere in the image, the PSP ABL's
+clock-setup command set covers only SetupFclkPll/SetupUclkPll (no VCN equivalent), no
+VCN/UVD/JPEG string appears in the firmware, and the PSP directory ships no VCN firmware
+image at all. That's consistent with — and explains — the "VCN core... stays dead"
+result above even under a hypothetical Gate 1+Gate 2 bypass: PowerUpVcn's two gates
+sequence power-island state, but no code path in this firmware build ever programs the
+VCN clock domain. A full fix would need new SMU firmware, not just a signed patch to the
+existing gates — inference from their evidence, not independently re-verified here.
+
 Version lineage and codec capability (block silicon capability, not enabled here):
 
 VCN    Products                   Type
@@ -3923,7 +3935,18 @@ the trust boundary, not a reachable path on stock firmware.
 Note that on the live board the kernel command line carries amd_iommu=off and
 mitigations=off: without IOMMU DMA isolation, a GPU or other DMA master can reach any
 host-physical page.  This is a deployment-configuration observation, not a memory-
-encryption property.
+encryption property. It also isn't evidence the IOMMU is broken: an external
+board-level repro (lorek123/bc250-notes, `iommu-result.md`, 2026-06-01, on a modded
+P3.00 BC-250) found that AGESA simply never initializes the IOMMU block or publishes
+an IVRS ACPI table when the BIOS setting is off — the "kernel panics with amd_iommu=on"
+failure mode people report is that absent-table crash, not broken hardware. Enabling
+Advanced -> CPU Configuration -> SVM Mode + IOMMU in BIOS made AMD-Vi init cleanly (14
+IOMMU groups, GPU isolated in its own group, confirmed with iommu=pt). This is a
+different board/BIOS build than this manual's own P3.00 (CBS 0x0101 above already
+notes IOMMU is "Present" in APCB but disabled at runtime), so treat it as a confirmed
+external result, not independently re-verified on this exact unit — but it means
+amd_iommu=off here is this deployment's own choice (avoid translation overhead on a
+trusted single-tenant compute node), not a hardware limitation.
 
 ┌─ CAUTION ────────────────────────────────────────────────────────────────────────────┐
 │  DRAM encryption keys are established before x86 release and are never exposed to    │
