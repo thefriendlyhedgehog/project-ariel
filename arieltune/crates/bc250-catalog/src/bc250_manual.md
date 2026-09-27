@@ -2462,6 +2462,21 @@ sequence power-island state, but no code path in this firmware build ever progra
 VCN clock domain. A full fix would need new SMU firmware, not just a signed patch to the
 existing gates — inference from their evidence, not independently re-verified here.
 
+A third, independent effort (Shalasere/bc250-vcn-research, active as of 2026-09-20) reaches
+the same "no runtime software path" conclusion by a third method: live hardware testing
+plus a systematic TOCTOU (time-of-check/time-of-use) analysis of the six gates between
+boot-time PSP permission programming and the runtime VCN firmware-load check. Their
+finding is that the isolation is a Data Fabric access-control table programmed once at
+boot from a signed PSP directory entry, not a separate SMU- or register-level gate — so
+even the two gates this manual documents (Gate 1/Gate 2 in PowerUpVcn) sit downstream of
+a fabric ACL that silently drops non-PSP writes to the VCN aperture regardless of which
+gate state you reach. They report every runtime-reachable bypass vector they tried
+(CCP DMA into PSP SRAM, direct SMN access, several named AMD CVEs) as closed on this
+board, leaving only paths that require taking the board offline (a full firmware/flash
+change or a hardware fault-injection attack) — outside this manual's software-only scope
+and not something this repo pursues. Cited here only for its conclusion, not its method:
+this manual does not reproduce or endorse the offline/physical techniques it explores.
+
 Version lineage and codec capability (block silicon capability, not enabled here):
 
 VCN    Products                   Type
